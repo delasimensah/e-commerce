@@ -12,7 +12,7 @@ import { getSalesCount } from "@/actions/get-sales-count";
 import { getGraphRevenue } from "@/actions/get-graph-revenue";
 import { getStockCount } from "@/actions/get-stock-count";
 
-import { formatter } from "@/lib/utils";
+// import { formatter } from "@/lib/utils";
 
 type DashboardPageProps = {
   params: {
@@ -40,12 +40,14 @@ const DashboardPage: FC<DashboardPageProps> = async ({ params }) => {
                 Total Revenue
               </CardTitle>
 
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              {/* <DollarSign className="h-4 w-4 text-muted-foreground" /> */}
+              <p className="text-xs text-muted-foreground">GH₵</p>
             </CardHeader>
 
             <CardContent>
               <div className="text-2xl font-bold">
-                {formatter.format(totalRevenue)}
+                {/* {formatter.format(totalRevenue)} */}
+                GH₵{totalRevenue.toFixed(2)}
               </div>
             </CardContent>
           </Card>
