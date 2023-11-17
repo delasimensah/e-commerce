@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Check, ChevronsUpDown, PlusCircle, Store } from "lucide-react"
+import { FC, ComponentPropsWithoutRef, useState } from "react";
+import { Check, ChevronsUpDown, PlusCircle, Store } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -13,36 +13,40 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { useStoreModal } from "@/hooks/use-store-modal"
-import { useParams, useRouter } from "next/navigation"
+} from "@/components/ui/popover";
 
-type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
+import { useStoreModal } from "@/hooks/use-store-modal";
+
+import { cn } from "@/lib/utils";
+
+type PopoverTriggerProps = ComponentPropsWithoutRef<typeof PopoverTrigger>;
 
 interface StoreSwitcherProps extends PopoverTriggerProps {
   items: Record<string, any>[];
 }
 
-export default function StoreSwitcher({ className, items = [] }: StoreSwitcherProps) {
+const StoreSwitcher: FC<StoreSwitcherProps> = ({ className, items = [] }) => {
   const storeModal = useStoreModal();
   const params = useParams();
   const router = useRouter();
 
+  const [open, setOpen] = useState(false);
+
   const formattedItems = items.map((item) => ({
     label: item.name,
-    value: item.id
+    value: item.id,
   }));
 
-  const currentStore = formattedItems.find((item) => item.value === params.storeId);
+  const currentStore = formattedItems.find(
+    (item) => item.value === params.storeId,
+  );
 
-  const [open, setOpen] = React.useState(false)
-
-  const onStoreSelect = (store: { value: string, label: string }) => {
+  const handleStoreSelect = (store: { value: string; label: string }) => {
     setOpen(false);
     router.push(`/${store.value}`);
   };
@@ -59,43 +63,52 @@ export default function StoreSwitcher({ className, items = [] }: StoreSwitcherPr
           className={cn("w-[200px] justify-between", className)}
         >
           <Store className="mr-2 h-4 w-4" />
+
           {currentStore?.label}
+
           <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
+
       <PopoverContent className="w-[200px] p-0">
         <Command>
           <CommandList>
             <CommandInput placeholder="Search store..." />
+
             <CommandEmpty>No store found.</CommandEmpty>
+
             <CommandGroup heading="Stores">
               {formattedItems.map((store) => (
                 <CommandItem
                   key={store.value}
-                  onSelect={() => onStoreSelect(store)}
+                  onSelect={() => handleStoreSelect(store)}
                   className="text-sm"
                 >
                   <Store className="mr-2 h-4 w-4" />
+
                   {store.label}
+
                   <Check
                     className={cn(
                       "ml-auto h-4 w-4",
                       currentStore?.value === store.value
                         ? "opacity-100"
-                        : "opacity-0"
+                        : "opacity-0",
                     )}
                   />
                 </CommandItem>
               ))}
             </CommandGroup>
           </CommandList>
+
           <CommandSeparator />
+
           <CommandList>
             <CommandGroup>
               <CommandItem
                 onSelect={() => {
-                  setOpen(false)
-                  storeModal.onOpen()
+                  setOpen(false);
+                  storeModal.onOpen();
                 }}
               >
                 <PlusCircle className="mr-2 h-5 w-5" />
@@ -108,3 +121,5 @@ export default function StoreSwitcher({ className, items = [] }: StoreSwitcherPr
     </Popover>
   );
 };
+
+export default StoreSwitcher;
