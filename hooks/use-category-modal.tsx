@@ -1,13 +1,13 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-interface useCategoryModalStore {
+type useCategoryModalStore = {
   isOpen: boolean;
   isEdit: boolean;
   editId?: string;
   onOpen: () => void;
   onEdit: (id: string) => void;
   onClose: () => void;
-}
+};
 
 export const useCategoryModal = create<useCategoryModalStore>((set) => ({
   isOpen: false,

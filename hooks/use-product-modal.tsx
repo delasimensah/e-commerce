@@ -1,13 +1,13 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-interface useProductModalStore {
+type useProductModalStore = {
   isOpen: boolean;
   isEdit: boolean;
   editId?: string;
   onOpen: () => void;
   onEdit: (id: string) => void;
   onClose: () => void;
-}
+};
 
 export const useProductModal = create<useProductModalStore>((set) => ({
   isOpen: false,
