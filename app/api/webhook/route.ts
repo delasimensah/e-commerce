@@ -12,9 +12,9 @@ export async function POST(req: Request) {
   }
 
   if (event.event === "charge.success") {
-    const order = await prismadb.order.update({
+    await prismadb.order.update({
       where: {
-        email: event.data.customer.email,
+        trxRef: event.data.reference,
       },
       data: {
         isPaid: true,
@@ -24,18 +24,17 @@ export async function POST(req: Request) {
       },
     });
 
-    // const productIds = order.orderItems.map((orderItem) => orderItem.productId);
-
-    // await prismadb.product.updateMany({
-    //   where: {
-    //     id: {
-    //       in: [...productIds],
+    //   const productIds = order.orderItems.map((orderItem) => orderItem.productId);
+    //   await prismadb.product.updateMany({
+    //     where: {
+    //       id: {
+    //         in: [...productIds],
+    //       },
     //     },
-    //   },
-    //   data: {
-    //     isArchived: true,
-    //   },
-    // });
+    //     data: {
+    //       isArchived: true,
+    //     },
+    //   });
   }
 
   return new NextResponse(null, { status: 200 });

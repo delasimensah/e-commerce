@@ -33,26 +33,6 @@ export async function POST(req: Request, { params }: Params) {
     return new NextResponse("Product ids are required", { status: 400 });
   }
 
-  await prismadb.order.create({
-    data: {
-      storeId: params.storeId,
-      isPaid: false,
-      phone: customerPhoneNumber,
-      address: customerAddress,
-      email: customerEmail,
-      name: customerName,
-      orderItems: {
-        create: productIds.map((productId: string) => ({
-          product: {
-            connect: {
-              id: productId,
-            },
-          },
-        })),
-      },
-    },
-  });
-
   const response = await axios.post(
     "https://api.paystack.co/transaction/initialize",
     {
@@ -67,8 +47,52 @@ export async function POST(req: Request, { params }: Params) {
     },
   );
 
+  await prismadb.order.create({
+    data: {
+      storeId: params.storeId,
+      isPaid: false,
+      phone: customerPhoneNumber,
+      address: customerAddress,
+      email: customerEmail,
+      name: customerName,
+      trxRef: response.data.data.reference as string,
+      orderItems: {
+        create: productIds.map((productId: string) => ({
+          product: {
+            connect: {
+              id: productId,
+            },
+          },
+        })),
+      },
+    },
+  });
+
   return NextResponse.json(
     { url: response.data.data.authorization_url },
+    {
+      headers: corsHeaders,
+    },
+  );
+}
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+
+  const reference = searchParams.get("trxref");
+
+  const response = await axios.get(
+    `https://api.paystack.co/transaction/verify/${reference}`,
+    {
+      headers: {
+        Authorization: `BEARER ${process.env.PAYSTACK_SECRET_KEY}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  return NextResponse.json(
+    { status: response.data.status },
     {
       headers: corsHeaders,
     },
