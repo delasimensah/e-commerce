@@ -1,10 +1,7 @@
-// import dotenv from "dotenv";
 import axios from "axios";
 import { NextResponse } from "next/server";
 
 import prismadb from "@/lib/prismadb";
-
-// dotenv.config({ path: `.env` });
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -23,7 +20,14 @@ type Params = {
 };
 
 export async function POST(req: Request, { params }: Params) {
-  const { productIds, totalPrice, customerEmail } = await req.json();
+  const {
+    productIds,
+    totalPrice,
+    customerName,
+    customerEmail,
+    customerPhoneNumber,
+    customerAddress,
+  } = await req.json();
 
   if (!productIds || productIds.length === 0) {
     return new NextResponse("Product ids are required", { status: 400 });
@@ -33,6 +37,10 @@ export async function POST(req: Request, { params }: Params) {
     data: {
       storeId: params.storeId,
       isPaid: false,
+      phone: customerPhoneNumber,
+      address: customerAddress,
+      email: customerEmail,
+      name: customerName,
       orderItems: {
         create: productIds.map((productId: string) => ({
           product: {

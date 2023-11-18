@@ -12,20 +12,20 @@ export async function POST(req: Request) {
   }
 
   if (event.event === "charge.success") {
-    // const order = await prismadb.order.update({
-    //   where: {
-    //     id: session?.metadata?.orderId,
-    //   },
-    //   data: {
-    //     isPaid: true,
-    //     address: addressString,
-    //     phone: session?.customer_details?.phone || "",
-    //   },
-    //   include: {
-    //     orderItems: true,
-    //   },
-    // });
+    const order = await prismadb.order.update({
+      where: {
+        email: event.data.customer.email,
+      },
+      data: {
+        isPaid: true,
+      },
+      include: {
+        orderItems: true,
+      },
+    });
+
     // const productIds = order.orderItems.map((orderItem) => orderItem.productId);
+
     // await prismadb.product.updateMany({
     //   where: {
     //     id: {
